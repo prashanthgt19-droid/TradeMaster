@@ -1,0 +1,33 @@
+{
+  "id": "/",
+  "name": "TradeMaster India – Learn Trading",
+  "short_name": "TradeMaster",
+  "description": "Comprehensive educational mobile trading app teaching Indian stock market, Forex, and Crypto with interactive candlestick charts, risk calculators, quizzes, and paper trading.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "categories": ["education", "finance", "business"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

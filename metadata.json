@@ -1,0 +1,6 @@
+{
+  "name": "TradeMaster India – Learn Trading",
+  "description": "Comprehensive educational mobile trading app teaching Indian stock market, Forex, and Crypto with interactive candlestick charts, risk calculators, quizzes, and paper trading.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

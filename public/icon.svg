@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="256" r="190" fill="url(#glowGrad)" stroke="#10b981" stroke-opacity="0.3" stroke-width="4"/>
+  
+  <!-- Left Candlestick -->
+  <line x1="190" y1="130" x2="190" y2="380" stroke="#34d399" stroke-width="6" stroke-linecap="round"/>
+  <rect x="160" y="200" width="60" height="120" rx="8" fill="#10b981"/>
+
+  <!-- Right Candlestick (Higher Bullish) -->
+  <line x1="320" y1="100" x2="320" y2="400" stroke="#34d399" stroke-width="6" stroke-linecap="round"/>
+  <rect x="290" y="140" width="60" height="150" rx="8" fill="#10b981"/>
+
+  <!-- Trendline with Arrow -->
+  <path d="M 130 360 L 370 120" stroke="#fbbf24" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="385,105 350,115 375,140" fill="#fbbf24"/>
+</svg>

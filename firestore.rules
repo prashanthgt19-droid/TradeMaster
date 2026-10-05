@@ -1,0 +1,116 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default deny everything
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId == request.auth.uid
+        && data.virtualBalance is number
+        && (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 100))
+        && (!('email' in data) || (data.email is string && data.email.size() <= 200))
+        && (!('streakDays' in data) || data.streakDays is number)
+        && (!('lastActiveDate' in data) || (data.lastActiveDate is string && data.lastActiveDate.size() <= 20))
+        && (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50))
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50));
+    }
+
+    function isValidLessonProgress(data, userId) {
+      return data.userId == userId
+        && data.lessonId is string
+        && data.lessonId.size() <= 128
+        && data.completed is bool
+        && (!('quizScore' in data) || data.quizScore is number)
+        && (!('quizPassed' in data) || data.quizPassed is bool)
+        && (!('unlockedViaReward' in data) || data.unlockedViaReward is bool)
+        && (!('pdfDownloaded' in data) || data.pdfDownloaded is bool)
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50));
+    }
+
+    function isValidJournalEntry(data, userId) {
+      return data.userId == userId
+        && data.symbol is string && data.symbol.size() <= 50
+        && (data.side == 'BUY' || data.side == 'SELL')
+        && data.entryPrice is number
+        && data.quantity is number && data.quantity > 0
+        && (!('exitPrice' in data) || data.exitPrice is number)
+        && (!('stopLoss' in data) || data.stopLoss is number)
+        && (!('target' in data) || data.target is number)
+        && (!('pnl' in data) || data.pnl is number)
+        && (!('market' in data) || (data.market is string && data.market.size() <= 30))
+        && (!('strategy' in data) || (data.strategy is string && data.strategy.size() <= 100))
+        && (!('emotion' in data) || (data.emotion is string && data.emotion.size() <= 50))
+        && (!('lessonLearned' in data) || (data.lessonLearned is string && data.lessonLearned.size() <= 500))
+        && (!('date' in data) || (data.date is string && data.date.size() <= 50))
+        && (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50));
+    }
+
+    function isValidPaperTrade(data, userId) {
+      return data.userId == userId
+        && data.symbol is string && data.symbol.size() <= 50
+        && (data.side == 'BUY' || data.side == 'SELL')
+        && data.entryPrice is number
+        && data.quantity is number && data.quantity > 0
+        && (data.status == 'OPEN' || data.status == 'CLOSED' || data.status == 'CANCELLED')
+        && (!('orderType' in data) || (data.orderType is string && data.orderType.size() <= 20))
+        && (!('currentPrice' in data) || data.currentPrice is number)
+        && (!('stopLoss' in data) || data.stopLoss is number)
+        && (!('target' in data) || data.target is number)
+        && (!('realizedPnl' in data) || data.realizedPnl is number)
+        && (!('market' in data) || (data.market is string && data.market.size() <= 30))
+        && (!('openedAt' in data) || (data.openedAt is string && data.openedAt.size() <= 50))
+        && (!('closedAt' in data) || (data.closedAt is string && data.closedAt.size() <= 50));
+    }
+
+    // User Profile Document
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow update: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow delete: if isOwner(userId);
+
+      // Lesson Progress Subcollection
+      match /progress/{lessonId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && isValidId(lessonId)
+          && isValidLessonProgress(request.resource.data, userId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Trading Journal Subcollection
+      match /journal/{journalId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && isValidId(journalId)
+          && isValidJournalEntry(request.resource.data, userId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Paper Trades Subcollection
+      match /paperTrades/{tradeId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && isValidId(tradeId)
+          && isValidPaperTrade(request.resource.data, userId);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with virtual paper trading balance, streak, and preferences.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 200 },
+        "virtualBalance": { "type": "number" },
+        "streakDays": { "type": "number" },
+        "lastActiveDate": { "type": "string", "maxLength": 20 },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["userId", "virtualBalance"]
+    },
+    "LessonProgress": {
+      "title": "LessonProgress",
+      "description": "Progress tracking for a user on an individual trading lesson.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "lessonId": { "type": "string", "maxLength": 128 },
+        "completed": { "type": "boolean" },
+        "quizScore": { "type": "number" },
+        "quizPassed": { "type": "boolean" },
+        "unlockedViaReward": { "type": "boolean" },
+        "pdfDownloaded": { "type": "boolean" },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["userId", "lessonId", "completed"]
+    },
+    "JournalEntry": {
+      "title": "JournalEntry",
+      "description": "Trading journal log for simulated or paper trades.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "symbol": { "type": "string", "maxLength": 50 },
+        "market": { "type": "string", "maxLength": 30 },
+        "side": { "type": "string", "enum": ["BUY", "SELL"] },
+        "entryPrice": { "type": "number" },
+        "exitPrice": { "type": "number" },
+        "stopLoss": { "type": "number" },
+        "target": { "type": "number" },
+        "quantity": { "type": "number" },
+        "pnl": { "type": "number" },
+        "strategy": { "type": "string", "maxLength": 100 },
+        "emotion": { "type": "string", "maxLength": 50 },
+        "lessonLearned": { "type": "string", "maxLength": 500 },
+        "date": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["userId", "symbol", "side", "entryPrice", "quantity"]
+    },
+    "PaperTrade": {
+      "title": "PaperTrade",
+      "description": "Active or historical simulated trade on the paper trading terminal.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "symbol": { "type": "string", "maxLength": 50 },
+        "market": { "type": "string", "maxLength": 30 },
+        "orderType": { "type": "string", "enum": ["MARKET", "LIMIT", "SL_LIMIT"] },
+        "side": { "type": "string", "enum": ["BUY", "SELL"] },
+        "entryPrice": { "type": "number" },
+        "currentPrice": { "type": "number" },
+        "stopLoss": { "type": "number" },
+        "target": { "type": "number" },
+        "quantity": { "type": "number" },
+        "status": { "type": "string", "enum": ["OPEN", "CLOSED", "CANCELLED"] },
+        "realizedPnl": { "type": "number" },
+        "openedAt": { "type": "string", "maxLength": 50 },
+        "closedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["userId", "symbol", "side", "entryPrice", "quantity", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Root user profile document"
+    },
+    "/users/{userId}/progress/{lessonId}": {
+      "schema": { "$ref": "#/entities/LessonProgress" },
+      "description": "Per-lesson progress, quiz status, and reward unlock state"
+    },
+    "/users/{userId}/journal/{journalId}": {
+      "schema": { "$ref": "#/entities/JournalEntry" },
+      "description": "User trading journal entries"
+    },
+    "/users/{userId}/paperTrades/{tradeId}": {
+      "schema": { "$ref": "#/entities/PaperTrade" },
+      "description": "User simulated paper trades"
+    }
+  }
+}
